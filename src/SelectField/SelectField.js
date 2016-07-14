@@ -76,6 +76,10 @@ class SelectField extends Component {
      * Override the inline-styles of the icon element.
      */
     iconStyle: PropTypes.object,
+
+
+
+
     /**
      * The id prop for the text field.
      */
@@ -88,6 +92,12 @@ class SelectField extends Component {
      * Override the default max-height of the underlying `DropDownMenu` element.
      */
     maxHeight: PropTypes.number,
+
+    /**
+     * Override the inline-styles of the icon element.
+     */
+    menuListStyle: PropTypes.object,
+
     /**
      * Override the inline-styles of the underlying `DropDownMenu` element.
      */
@@ -167,6 +177,7 @@ class SelectField extends Component {
       errorText,
       maxHeight,
       menuStyle,
+      menuListStyle,
       onFocus,
       onBlur,
       onChange,
@@ -200,6 +211,7 @@ class SelectField extends Component {
           disabled={disabled}
           style={Object.assign(styles.dropDownMenu, selectFieldRoot, menuStyle)}
           labelStyle={Object.assign(styles.label, labelStyle)}
+          listStyle={menuListStyle}
           iconStyle={Object.assign(styles.icon, iconStyle)}
           underlineStyle={styles.hideDropDownUnderline}
           autoWidth={autoWidth}
