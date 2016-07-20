@@ -77,9 +77,6 @@ class SelectField extends Component {
      */
     iconStyle: PropTypes.object,
 
-
-
-
     /**
      * The id prop for the text field.
      */
