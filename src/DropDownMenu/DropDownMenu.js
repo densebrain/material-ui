@@ -16,6 +16,11 @@ function getStyles(props, context) {
   const spacing = context.muiTheme.baseTheme.spacing;
   const palette = context.muiTheme.baseTheme.palette;
   const accentColor = context.muiTheme.dropDownMenu.accentColor;
+
+  const style = props.style || {};
+
+  const labelPaddingLeft = style.paddingLeft || spacing.desktopGutter;
+
   return {
     control: {
       cursor: disabled ? 'not-allowed' : 'pointer',
@@ -31,13 +36,13 @@ function getStyles(props, context) {
     },
     label: {
       color: disabled ? palette.disabledColor : palette.textColor,
-      lineHeight: `${spacing.desktopToolbarHeight}px`,
-      opacity: 1,
+      lineHeight: style.lineHeight || `${spacing.desktopToolbarHeight}px`,
+      opacity: style.lineHeight ||1,
       position: 'relative',
-      paddingLeft: spacing.desktopGutter,
-      paddingRight: spacing.iconSize +
-      spacing.desktopGutterLess +
-      spacing.desktopGutterMini,
+      paddingLeft: labelPaddingLeft,
+      paddingRight: style.paddingRight || spacing.iconSize +
+        labelPaddingLeft +
+        spacing.desktopGutterMini,
       top: 0,
     },
     labelWhenOpen: {
