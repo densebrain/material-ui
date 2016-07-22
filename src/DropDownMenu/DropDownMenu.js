@@ -37,12 +37,12 @@ function getStyles(props, context) {
     label: {
       color: disabled ? palette.disabledColor : palette.textColor,
       lineHeight: style.lineHeight || `${spacing.desktopToolbarHeight}px`,
-      opacity: style.lineHeight ||1,
+      opacity: style.opacity || 1,
       position: 'relative',
       paddingLeft: labelPaddingLeft,
-      paddingRight: style.paddingRight || spacing.iconSize +
+      paddingRight: style.paddingRight || (spacing.iconSize +
         labelPaddingLeft +
-        spacing.desktopGutterMini,
+        spacing.desktopGutterMini),
       top: 0,
     },
     labelWhenOpen: {
