@@ -88,6 +88,12 @@ class MenuItem extends Component {
       'focused',
       'keyboard-focused',
     ]),
+
+    /**
+     * Can the item be manually focused
+     */
+    manualFocusEnabled: PropTypes.bool,
+
     /**
      * Override the inline-styles of the inner div.
      */
@@ -130,6 +136,11 @@ class MenuItem extends Component {
     listStyle: PropTypes.object,
 
     /**
+     * On keyboard focus to pass down to
+     */
+    onFocusState: PropTypes.func,
+
+    /**
      * Override the inline-styles of the root element.
      */
     style: PropTypes.object,
@@ -143,6 +154,7 @@ class MenuItem extends Component {
     checked: false,
     desktop: false,
     disabled: false,
+    manualFocusEnabled: true,
     focusState: 'none',
     insetChildren: false,
   };
@@ -186,6 +198,9 @@ class MenuItem extends Component {
   }
 
   applyFocusState() {
+    if (this.props.onFocusState)
+      this.props.onFocusState(this.props.focusState);
+
     this.refs.listItem.applyFocusState(this.props.focusState);
   }
 
@@ -233,6 +248,7 @@ class MenuItem extends Component {
       innerDivStyle,
       insetChildren,
       leftIcon,
+      manualFocusEnabled,
       menuItems,
       rightIcon,
       listStyle,
@@ -298,12 +314,14 @@ class MenuItem extends Component {
       <ListItem
         {...other}
         disabled={disabled}
+        manualFocusEnabled={manualFocusEnabled}
         innerDivStyle={mergedInnerDivStyles}
         insetChildren={insetChildren}
         leftIcon={leftIconElement}
         ref="listItem"
         rightIcon={rightIconElement}
         style={mergedRootStyles}
+        data-focus-state={this.props.focusState /*Focus state tracking for css styling "data-focus-state" */}
       >
         {children}
         {secondaryTextElement}

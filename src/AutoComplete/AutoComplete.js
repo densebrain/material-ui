@@ -9,6 +9,7 @@ import Popover from '../Popover/Popover';
 import propTypes from '../utils/propTypes';
 import warning from 'warning';
 import deprecated from '../utils/deprecatedPropType';
+import _ from 'lodash'
 
 function getStyles(props, context, state) {
   const {anchorEl} = state;
@@ -43,6 +44,12 @@ function getStyles(props, context, state) {
 
 class AutoComplete extends Component {
   static propTypes = {
+    /**
+     * Callback for escape pressed,
+     * this is ONLY called when the menu is closed
+     */
+    onEscKeyDown: PropTypes.func,
+
     /**
      * Location of the anchor for the auto complete.
      */
@@ -184,7 +191,7 @@ class AutoComplete extends Component {
       text: 'text',
       value: 'value',
     },
-    disableFocusRipple: true,
+    disableFocusRipple: false,
     filter: (searchText, key) => searchText !== '' && key.indexOf(searchText) !== -1,
     fullWidth: false,
     open: false,
@@ -293,32 +300,62 @@ class AutoComplete extends Component {
   };
 
   handleEscKeyDown = () => {
-    this.close();
+    if (!this.state.open)
+      this.props.onEscKeyDown && this.props.onEscKeyDown();
+    else
+      this.close();
   };
 
   handleKeyDown = (event) => {
-    if (this.props.onKeyDown) this.props.onKeyDown(event);
+    if (this.props.onKeyDown)
+      this.props.onKeyDown(event);
+
+    const target = event.target;
 
     switch (keycode(event)) {
-      case 'enter':
-        this.close();
-        const searchText = this.state.searchText;
-        if (searchText !== '') {
-          this.props.onNewRequest(searchText, -1);
-        }
-        break;
-
       case 'esc':
-        this.close();
+        event.stopPropagation();
+        event.preventDefault();
+        this.handleEscKeyDown();
         break;
 
-      case 'down':
+      case 'enter':
+        event.stopPropagation();
         event.preventDefault();
-        this.setState({
-          open: true,
-          focusTextField: false,
-          anchorEl: ReactDOM.findDOMNode(this.refs.searchTextField),
-        });
+
+        if (this.state.menuRef) {
+
+
+          const searchText = this.state.searchText;
+          //if (searchText)
+          this.props.onNewRequest(searchText || "", this.state.menuRef.state.focusIndex);
+          this.close();
+          //const searchText = this.state.searchText;
+          // if (searchText !== '') {
+          //
+          // }
+        }
+
+
+        break;
+
+      case 'up':
+      case 'down':
+        if (this.state.focusTextField || (this.props.openOnFocus && !this.state.open)) {
+          this.setState({
+            open: true,
+            focusTextField: false,
+            anchorEl: ReactDOM.findDOMNode(this.refs.searchTextField),
+          });
+        }
+
+        // If the menu is attached then handoff the event
+        if (this.state.menuRef) {
+          this.state.menuRef.handleKeyDown(event);
+        }
+
+        event.stopPropagation();
+        event.preventDefault();
         break;
 
       default:
@@ -354,14 +391,16 @@ class AutoComplete extends Component {
     }
   };
 
-  handleFocus = (event) => {
+  handleOpenOnFocus = _.debounce((event) => {
     if (!this.state.open && (this.props.triggerUpdateOnFocus || this.props.openOnFocus)) {
       this.setState({
         open: true,
-        anchorEl: ReactDOM.findDOMNode(this.refs.searchTextField),
+        anchorEl: ReactDOM.findDOMNode(this.refs.searchTextField)
       });
     }
+  },200);
 
+  handleFocus = (event) => {
     this.setState({
       focusTextField: true,
     });
@@ -369,7 +408,16 @@ class AutoComplete extends Component {
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
+
+    this.handleOpenOnFocus();
   };
+
+  /**
+   * Set the menu component ref
+   *
+   * @param menuRef
+   */
+  setMenuRef = (menuRef) => this.setState({menuRef});
 
   blur() {
     this.refs.searchTextField.blur();
@@ -393,6 +441,7 @@ class AutoComplete extends Component {
       fullWidth,
       style,
       hintText,
+      onEscKeyDown,// eslint-disable-line no-unused-vars
       maxSearchResults,
       menuCloseDelay, // eslint-disable-line no-unused-vars
       textFieldStyle,
@@ -404,6 +453,7 @@ class AutoComplete extends Component {
       onNewRequest, // eslint-disable-line no-unused-vars
       onUpdateInput, // eslint-disable-line no-unused-vars
       openOnFocus, // eslint-disable-line no-unused-vars
+      open:openProp,
       searchText: searchTextProp, // eslint-disable-line no-unused-vars
       ...other,
     } = this.props;
@@ -477,10 +527,10 @@ class AutoComplete extends Component {
 
     this.requestsList = requestsList;
 
-    const menu = open && requestsList.length > 0 && (
+    const menu = (open) && requestsList.length > 0 && (
       <Menu
         {...menuProps}
-        ref="menu"
+        ref={this.setMenuRef}
         autoWidth={false}
         disableAutoFocus={focusTextField}
         onEscKeyDown={this.handleEscKeyDown}

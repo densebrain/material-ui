@@ -189,6 +189,13 @@ class ListItem extends Component {
      * This is the `SvgIcon` or `FontIcon` to be displayed on the left side.
      */
     leftIcon: PropTypes.element,
+
+    /**
+     * Can the item be manually focused, this is really a bit of trickery for
+     * use with Auto Complete menus and key navigation driven from the text input
+     */
+    manualFocusEnabled: PropTypes.bool,
+
     /**
      * An array of `ListItem`s to nest underneath the current `ListItem`.
      */
@@ -279,6 +286,7 @@ class ListItem extends Component {
     disabled: false,
     initiallyOpen: false,
     insetChildren: false,
+    manualFocusEnabled: true,
     nestedItems: [],
     nestedLevel: 0,
     onKeyboardFocus: () => {},
@@ -326,9 +334,11 @@ class ListItem extends Component {
 
   // This method is needed by the `MenuItem` component.
   applyFocusState(focusState) {
+    this.setState({isKeyboardFocused: focusState === 'keyboard-focused'});
+
     const button = this.refs.enhancedButton;
 
-    if (button) {
+    if (button && this.props.manualFocusEnabled) {
       const buttonEl = ReactDOM.findDOMNode(button);
 
       switch (focusState) {
@@ -504,6 +514,7 @@ class ListItem extends Component {
       leftAvatar,
       leftCheckbox,
       leftIcon,
+      manualFocusEnabled,
       nestedItems,
       nestedLevel,
       nestedListStyle,
@@ -644,7 +655,8 @@ class ListItem extends Component {
     const hasCheckbox = leftCheckbox || rightToggle;
 
     return (
-      <div>
+      // Added additional data attributes to enable css styling based on internal focus state
+      <div data-keyboard-focused={this.state.isKeyboardFocused} data-hover={this.state.hovered}>
         {
           hasCheckbox ? this.createLabelElement(styles, contentChildren, other) :
           disabled ? this.createDisabledElement(styles, contentChildren, other) : (
