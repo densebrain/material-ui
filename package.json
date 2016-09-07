@@ -39,16 +39,16 @@
     "test:unit:watch": "cross-env NODE_ENV=test babel-node test/watch.js unit"
   },
   "peerDependencies": {
-    "react": "^15.0.0",
-    "react-dom": "^15.0.0",
+    "react": "15.3.0",
+    "react-dom": "15.3.0",
     "react-tap-event-plugin": "^1.0.0"
   },
   "dependencies": {
     "inline-style-prefixer": "^2.0.1",
     "keycode": "^2.1.1",
     "lodash": "^4.13.1",
-    "react-addons-create-fragment": "^15.3.0",
-    "react-addons-transition-group": "^15.3.0",
+    "react-addons-create-fragment": "15.3.0",
+    "react-addons-transition-group": "15.3.0",
     "react-event-listener": "^0.2.1",
     "recompose": "^0.20.2",
     "simple-assign": "^0.1.0",
