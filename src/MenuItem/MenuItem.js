@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 import shallowEqual from 'recompose/shallowEqual';
+import propTypes from '../utils/propTypes';
 import Popover from '../Popover/Popover';
 import CheckIcon from '../svg-icons/navigation/check';
 import ListItem from '../List/ListItem';
@@ -93,7 +94,11 @@ class MenuItem extends Component {
      * Can the item be manually focused
      */
     manualFocusEnabled: PropTypes.bool,
-
+  
+    childTargetOrigin: propTypes.origin,
+    
+    childAnchorOrigin: propTypes.origin,
+    
     /**
      * Override the inline-styles of the inner div.
      */
@@ -157,6 +162,9 @@ class MenuItem extends Component {
     manualFocusEnabled: true,
     focusState: 'none',
     insetChildren: false,
+    
+    childAnchorOrigin: {horizontal: 'right', vertical: 'top'},
+    childTargetOrigin: {horizontal: 'right', vertical: 'top'}
   };
 
   static contextTypes = {
@@ -247,6 +255,10 @@ class MenuItem extends Component {
       focusState, // eslint-disable-line no-unused-vars
       innerDivStyle,
       insetChildren,
+      
+      childAnchorOrigin,
+      childTargetOrigin,
+      
       leftIcon,
       manualFocusEnabled,
       menuItems,
@@ -296,7 +308,8 @@ class MenuItem extends Component {
       childMenuPopover = (
         <Popover
           animation={animation}
-          anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+          anchorOrigin={childAnchorOrigin}
+          targetOrigin={childTargetOrigin}
           anchorEl={this.state.anchorEl}
           open={this.state.open}
           useLayerForClickAway={false}
