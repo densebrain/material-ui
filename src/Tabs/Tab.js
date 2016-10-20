@@ -35,6 +35,8 @@ class Tab extends Component {
      * Sets the icon of the tab, you can pass `FontIcon` or `SvgIcon` elements.
      */
     icon: PropTypes.node,
+  
+    iconStyle: PropTypes.object,
     /**
      * @ignore
      */
@@ -94,6 +96,7 @@ class Tab extends Component {
       onActive, // eslint-disable-line no-unused-vars
       onTouchTap, // eslint-disable-line no-unused-vars
       selected, // eslint-disable-line no-unused-vars
+      iconStyle,
       label,
       style,
       value, // eslint-disable-line no-unused-vars
@@ -106,11 +109,11 @@ class Tab extends Component {
     let iconElement;
     if (icon && React.isValidElement(icon)) {
       const iconProps = {
-        style: {
+        style: Object.assign({
           fontSize: 24,
           color: styles.root.color,
           marginBottom: label ? 5 : 0,
-        },
+        },iconStyle),
       };
       // If it's svg icon set color via props
       if (icon.type.muiName !== 'FontIcon') {
